@@ -1,5 +1,6 @@
 #include "textview.hpp"
 #include <termios.h>
+#include <poll.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include <signal.h>
@@ -36,7 +37,7 @@ Textview::Textview(){
 }
 
 Textview::~Textview(){
-    std::cout << "text ded" << std::endl;
+    std::cout << std::endl;
     tcsetattr(0, TCSANOW, &old_term_state);
 }
 
@@ -58,9 +59,19 @@ void Textview::draw(){
 }
 
 void Textview::run(){
+    struct pollfd input = {0, POLL_IN, 0};
     screen_clear(win_size.ws_row);
     game_running = true;
     while (game_running) {
+        
+        if (poll(&input, 1, 1) == 1){
+            char inc_char;
+            read(0, &inc_char, 1);
+
+            if (inc_char == 'q')
+                game_running = false;
+        }
+
         draw();
         usleep(1000);
     }
