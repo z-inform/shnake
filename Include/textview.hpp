@@ -14,7 +14,8 @@ class Textview : public View {
     virtual void run() override;
     Textview();
     ~Textview();
-    static std::function<void(int)> f;
+    static std::function<void(int)> c_sigint_handler;
+    static std::function<void(int)> c_size_change_handler;
 
     private: 
     
@@ -26,4 +27,5 @@ class Textview : public View {
     void vline(unsigned int x, unsigned int y, unsigned int length, const std::string& elem);
     void screen_clear(unsigned int rows);
     void sigint_handler(int sig);
+    void size_change_handler(int sig);
 };
