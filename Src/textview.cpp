@@ -1,5 +1,6 @@
 #include "textview.hpp"
 #include <termios.h>
+#include <sys/ioctl.h>
 #include <unistd.h>
 #include <signal.h>
 #include <iostream>
@@ -23,6 +24,8 @@ Textview::Textview(){
     cfmakeraw(&raw);
     raw.c_lflag |= ISIG;
     raw.c_cc[VINTR] = '';
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &win_size); 
+    win_size.ws_col = 0;
     tcsetattr(0, TCSANOW, &raw);
 
     f = std::bind(&Textview::sigint_handler, this, std::placeholders::_1);
@@ -38,16 +41,24 @@ Textview::~Textview(){
 }
 
 void Textview::draw(){
-    screen_clear(80);
-    hline(1, 1, 40, "\e[33m-");
-    vline(2, 1, 40, "\e[33m#");
-    vline(2, 40, 40, "\e[33m#");
-    hline(41, 1, 40, "\e[33m-");
+    
+    struct winsize temp_win_size;
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &temp_win_size); 
+
+    if (win_size.ws_col != temp_win_size.ws_col) {
+        screen_clear(win_size.ws_row);
+        win_size = temp_win_size;
+        hline(1, 1, win_size.ws_col, "\e[33m-");
+        vline(2, 1, win_size.ws_row - 2, "\e[33m#");
+        vline(2, win_size.ws_col, win_size.ws_row - 2, "\e[33m#");
+        hline(win_size.ws_row - 1, 1, win_size.ws_col, "\e[33m-");
+    }
+
     fflush(stdout);
 }
 
 void Textview::run(){
-    std::cout << "oaoa text run" << std::endl;
+    screen_clear(win_size.ws_row);
     game_running = true;
     while (game_running) {
         draw();

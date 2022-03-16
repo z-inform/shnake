@@ -2,6 +2,7 @@
 
 #include "view.hpp"
 #include <termios.h>
+#include <sys/ioctl.h>
 #include <unistd.h>
 #include <functional>
 
@@ -20,6 +21,7 @@ class Textview : public View {
     bool game_running;
     struct termios old_term_state;
 
+    struct winsize win_size;
     void hline(unsigned int x, unsigned int y, unsigned int length, const std::string& elem);
     void vline(unsigned int x, unsigned int y, unsigned int length, const std::string& elem);
     void screen_clear(unsigned int rows);
