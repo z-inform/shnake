@@ -22,10 +22,10 @@ class Textview : public View {
     bool game_running;
     struct termios old_term_state;
 
-    struct winsize win_size;
     void hline(unsigned int x, unsigned int y, unsigned int length, const std::string& elem);
     void vline(unsigned int x, unsigned int y, unsigned int length, const std::string& elem);
-    void screen_clear(unsigned int rows);
+    void screen_clear();
+    void draw_frame();
     void sigint_handler(int sig);
     void size_change_handler(int sig);
 };

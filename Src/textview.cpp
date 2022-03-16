@@ -23,8 +23,8 @@ void Textview::sigint_handler(int sig){
 }
 
 void Textview::size_change_handler(int sig){
-    Textview::screen_clear(Textview::win_size.ws_row);
-    Textview::draw();
+    Textview::screen_clear();
+    Textview::draw_frame();
 }
 
 Textview::Textview(){
@@ -35,7 +35,10 @@ Textview::Textview(){
     cfmakeraw(&raw);
     raw.c_lflag |= ISIG;
     raw.c_cc[VINTR] = '';
+    struct winsize win_size;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &win_size); 
+    max_coord.x = win_size.ws_row;
+    max_coord.y = win_size.ws_col;
     tcsetattr(0, TCSANOW, &raw);
 
     c_sigint_handler = std::bind(&Textview::sigint_handler, this, std::placeholders::_1);
@@ -53,23 +56,34 @@ Textview::~Textview(){
     tcsetattr(0, TCSANOW, &old_term_state);
 }
 
-void Textview::draw(){
+void Textview::draw_frame(){
     
+    struct winsize win_size;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &win_size); 
 
-    screen_clear(win_size.ws_row);
-    hline(1, 1, win_size.ws_col, "\e[33m-");
-    vline(2, 1, win_size.ws_row - 2, "\e[33m#");
-    vline(2, win_size.ws_col, win_size.ws_row - 2, "\e[33m#");
-    hline(win_size.ws_row - 1, 1, win_size.ws_col, "\e[33m-");
+    max_coord.x = win_size.ws_row;
+    max_coord.y = win_size.ws_col;
+
+    screen_clear();
+
+    hline(1, 1, max_coord.y, "\e[33m-");
+    vline(2, 1, max_coord.x - 1, "\e[33m#");
+    vline(2, max_coord.y, max_coord.x - 1, "\e[33m#");
+    hline(max_coord.x, 1, max_coord.y, "\e[33m-");
 
     fflush(stdout);
 }
 
+void Textview::draw(){
+
+
+
+}
+
 void Textview::run(){
     struct pollfd input = {0, POLL_IN, 0};
-    screen_clear(win_size.ws_row);
-    draw();
+    screen_clear();
+    draw_frame();
     game_running = true;
     while (game_running) {
         
@@ -102,11 +116,7 @@ void Textview::vline(unsigned int x, unsigned int y, unsigned int length, const 
     std::cout << "\e[m";
 }
 
-void Textview::screen_clear(unsigned int rows){
-    printf("\e[1;1H");
-    for(unsigned int i = 1; i <= rows; i++){
-        std::cout << "\e[J";
-        printf("\e[%d;1H", i);
-    }
+void Textview::screen_clear(){
+    printf("\e[1;1H \e[J");
 }
 

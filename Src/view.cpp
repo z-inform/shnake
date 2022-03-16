@@ -19,3 +19,12 @@ std::shared_ptr<View> View::get(const std::string arg){
     
     return obj;
 }
+
+Coord View::get_max_coord(){
+    return View::max_coord;
+}
+
+void View::set_max_coord(int x, int y){
+    View::max_coord.x = x;
+    View::max_coord.y = y;
+}
