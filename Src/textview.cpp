@@ -37,8 +37,8 @@ Textview::Textview(){
     raw.c_cc[VINTR] = '';
     struct winsize win_size;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &win_size); 
-    max_coord.x = win_size.ws_row;
-    max_coord.y = win_size.ws_col;
+    max_coord.x = win_size.ws_row + 1;
+    max_coord.y = win_size.ws_col / 2;
     tcsetattr(0, TCSANOW, &raw);
 
     c_sigint_handler = std::bind(&Textview::sigint_handler, this, std::placeholders::_1);
@@ -49,11 +49,14 @@ Textview::Textview(){
     sigaction(SIGINT, &act, NULL);
     act.sa_handler = &::size_change_handler;
     sigaction(SIGWINCH, &act, NULL);
+
+    printf("\e[?25l");
 }
 
 Textview::~Textview(){
-    std::cout << std::endl;
+    screen_clear();
     tcsetattr(0, TCSANOW, &old_term_state);
+    printf("\e[?25h");
 }
 
 void Textview::draw_frame(){
@@ -61,15 +64,15 @@ void Textview::draw_frame(){
     struct winsize win_size;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &win_size); 
 
-    max_coord.x = win_size.ws_row;
-    max_coord.y = win_size.ws_col;
+    max_coord.x = win_size.ws_row + 1;
+    max_coord.y = win_size.ws_col / 2;
 
     screen_clear();
 
-    hline(1, 1, max_coord.y, "\e[33m-");
-    vline(2, 1, max_coord.x - 1, "\e[33m#");
-    vline(2, max_coord.y, max_coord.x - 1, "\e[33m#");
-    hline(max_coord.x, 1, max_coord.y, "\e[33m-");
+    hline(1, 1, max_coord.y, "\e[34m⌘ ");
+    vline(2, 1, max_coord.x, "\e[34m⌘");
+    vline(2, max_coord.y, max_coord.x, "\e[34m⌘");
+    hline(max_coord.x, 1, max_coord.y, "\e[34m⌘ ");
 
     fflush(stdout);
 }
@@ -80,12 +83,19 @@ void Textview::draw(){
 
 }
 
+void Textview::draw(Coord& rabbit){
+    printf("\e[%d;%dH", rabbit.x, rabbit.y * 2 - 1);
+    printf("\e[96m❂ ");
+}
+
 void Textview::run(){
     struct pollfd input = {0, POLL_IN, 0};
     screen_clear();
     draw_frame();
     game_running = true;
     while (game_running) {
+    
+        draw_all();
         
         if (poll(&input, 1, 1) == 1){
             char inc_char;
@@ -95,12 +105,12 @@ void Textview::run(){
                 game_running = false;
         }
 
-        usleep(1000);
+        usleep(10000);
     }
 }
 
 void Textview::hline(unsigned int x, unsigned int y, unsigned int length, const std::string& elem){
-    printf("\e[%d;%dH", x, y);
+    printf("\e[%d;%dH", x, y * 2 - 1);
     for(unsigned int i = 0; i < length; i++){
         std::cout << elem;
     }
@@ -108,10 +118,10 @@ void Textview::hline(unsigned int x, unsigned int y, unsigned int length, const 
 }
 
 void Textview::vline(unsigned int x, unsigned int y, unsigned int length, const std::string& elem){
-    printf("\e[%d;%dH", x, y);
+    printf("\e[%d;%dH", x, y * 2 - 1);
     for(unsigned int i = 0; i < length; i++){
         std::cout << elem;
-        printf("\e[%d;%dH", x + i, y);
+        printf("\e[%d;%dH", x + i - 1, y * 2 - 1);
     }
     std::cout << "\e[m";
 }

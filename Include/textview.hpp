@@ -28,4 +28,6 @@ class Textview : public View {
     void draw_frame();
     void sigint_handler(int sig);
     void size_change_handler(int sig);
+
+    void draw(Coord& rabbit);
 };

@@ -9,8 +9,9 @@ std::shared_ptr<View> View::get(const std::string arg){
 
     if (!obj) {
 
-        if (arg == "graph") 
-            obj = std::make_shared<Graphview>();
+        if (arg == "graph") {
+            //obj = std::make_shared<Graphview>();
+        }
 
         if (arg == "text")
             obj = std::make_shared<Textview>();
