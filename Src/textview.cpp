@@ -79,13 +79,37 @@ void Textview::draw_frame(){
 
 void Textview::draw(){
 
-
-
 }
 
 void Textview::draw(Coord& rabbit){
     printf("\e[%d;%dH", rabbit.x, rabbit.y * 2 - 1);
     printf("\e[96m❂ ");
+}
+
+void Textview::draw(Snake& snake){
+
+    for (auto segment : snake.body) {
+        printf("\e[%d;%dH", segment.first.x, segment.first.y * 2 - 1);    
+
+        switch (segment.second) {
+            case Snake::dir::RIGHT:
+                printf("\e[96m⇛ ");
+                break;
+            case Snake::dir::UP:
+                printf("\e[96m⤊ ");
+                break;
+            case Snake::dir::LEFT:
+                printf("\e[96m⇚ ");
+                break;
+            case Snake::dir::DOWN:
+                printf("\e[96m⤋ ");
+                break;
+            default:
+                printf("$");
+
+        }
+    }
+
 }
 
 void Textview::run(){

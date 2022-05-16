@@ -1,6 +1,7 @@
 #pragma once
 
 #include "view.hpp"
+#include "model.hpp"
 #include <termios.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
@@ -30,4 +31,5 @@ class Textview : public View {
     void size_change_handler(int sig);
 
     void draw(Coord& rabbit);
+    void draw(Snake& snake);
 };

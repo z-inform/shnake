@@ -17,7 +17,7 @@ Coord Game::get_rand_coord(){
 }
 
 void Game::add_rabbit(){
-    rabbits.push_back(get_rand_coord());
+    rabbits.insert(get_rand_coord());
 }
 
 Game::Game(){
@@ -27,6 +27,10 @@ Game::Game(){
     for (int i = 0; i < num_rabbits; i++){
         add_rabbit();
     }
+
+    Coord start = {v -> get_max_coord().x / 3, v -> get_max_coord().y / 3};
+
+    snakes.push_back(Snake(start));
 }
 
 void Game::draw_all(){
@@ -35,4 +39,47 @@ void Game::draw_all(){
     for (auto r : rabbits)
         v -> draw(r);
 
+    for (auto s : snakes) {
+        v -> draw(s);
+    }
+
+}
+
+void Game::snakes_step(){
+    for (auto snake : snakes) {
+
+        Coord new_head = snake.body.front().first;
+
+        switch (snake.body.front().second) {
+            case Snake::dir::RIGHT:
+                new_head.y++;
+                break;
+            case Snake::dir::UP:
+                new_head.x--;
+                break;
+            case Snake::dir::LEFT:
+                new_head.y--;
+                break;
+            case Snake::dir::DOWN:
+                new_head.x++;
+                break;
+        }
+
+        auto eaten = rabbits.find(new_head);
+        if (eaten != rabbits.end()) {
+            rabbits.erase(eaten);
+        } else {
+            snake.body.pop_back();
+        }
+
+        snake.body.push_front(std::pair<Coord, Snake::dir>(new_head, snake.body.front().second));
+    }
+}
+
+Snake::Snake(Coord head) {
+    Coord cur = head;
+    for (int i = 0; i < 5; i++){
+        body.push_back(std::pair<Coord, dir>(cur, dir::RIGHT));
+        cur.y--;
+    }
 }

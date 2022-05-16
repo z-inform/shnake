@@ -1,5 +1,6 @@
 CXX = g++
 CXXFLAGS = -Wall -Wextra -I./$(INCLDIR)
+LDFLAGS = -lsfml-graphics -lsfml-window -lsfml-system
 
 PROG = $(BUILDDIR)/snake.elf
 MODULES = snake textview graphview human model view
@@ -13,7 +14,7 @@ INCLDIR = Include
 all : $(PROG)
 
 $(PROG) : $(addprefix $(BUILDDIR)/, $(OBJ))
-	$(CXX) $(CXXFLAGS) $^ -o $@
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) $^ -o $@
 
 $(addprefix $(BUILDDIR)/, $(OBJ)) : $(BUILDDIR)/%.o : $(SRCDIR)/%.cpp $(INCLDIR)/%.hpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@

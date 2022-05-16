@@ -3,15 +3,9 @@
 #include <iostream>
 #include <memory>
 #include <functional>
-
-class Coord {
-    public:
-        int x;
-        int y;
-};
+#include "model.hpp"
 
 class View {
-    
 
     protected: 
         Coord max_coord;
@@ -22,6 +16,7 @@ class View {
         virtual void draw() = 0;
         virtual void run () = 0;
         virtual void draw(Coord& rabbit) = 0; //draw a  rabbit 
+        virtual void draw(Snake& snake) = 0; //draw a  rabbit 
         Coord get_max_coord();
         void set_max_coord(int x, int y);
         std::function<void(void)> draw_all;
