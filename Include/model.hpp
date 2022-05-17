@@ -35,10 +35,11 @@ class Snake {
 
 class Game {
 
-    unsigned short num_rabbits = 50;
+    unsigned short num_rabbits = 500;
 
     std::set<Coord> rabbits;
     std::set<Coord> obstacles;
+    std::set<Coord> available;
     Coord get_rand_coord();
 
     std::mt19937 generator {static_cast<long unsigned int>(std::chrono::system_clock::now().time_since_epoch().count())};
@@ -47,6 +48,7 @@ class Game {
     std::list<Snake> snakes;
 
     void snakes_check_crash();
+    void update_available();
 
     public:
 
