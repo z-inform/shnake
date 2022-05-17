@@ -1,9 +1,9 @@
 CXX = g++
-CXXFLAGS = -Wall -Wextra -I./$(INCLDIR)
+CXXFLAGS = -Wall -Wextra -I./$(INCLDIR) -g
 LDFLAGS = -lsfml-graphics -lsfml-window -lsfml-system
 
 PROG = $(BUILDDIR)/snake.elf
-MODULES = snake textview graphview human model view
+MODULES = snake textview graphview controller model view
 OBJ = $(addsuffix .o, $(MODULES))
 SRC = $(addsuffix .cpp, $(MODULES))
 

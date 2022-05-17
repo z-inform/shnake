@@ -120,13 +120,22 @@ void Textview::run(){
 
     while (game_running) {
     
-        
-        if (poll(&input, 1, 1) == 1){
+        std::string req = ""; 
+        while (poll(&input, 1, 1) == 1){
             char inc_char;
             read(0, &inc_char, 1);
-
-            if (inc_char == 'q')
+            
+            if (inc_char == 'q') {
                 game_running = false;
+                break;
+            }
+
+            req += inc_char;
+            auto res = button_table.find(req);
+            if (res != button_table.end()) {
+                res -> second();
+                req = "";
+            }
         }
 
         screen_clear();

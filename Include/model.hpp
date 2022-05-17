@@ -22,6 +22,7 @@ class Snake {
     public:
 
     Snake(Coord head);
+    Snake() {};
     
     enum class dir {
         UP,
@@ -31,6 +32,7 @@ class Snake {
     };
 
     std::list<std::pair<Coord, dir>> body;
+    dir last_dir;
 };
 
 class Game {
@@ -45,7 +47,6 @@ class Game {
     std::mt19937 generator {static_cast<long unsigned int>(std::chrono::system_clock::now().time_since_epoch().count())};
 
     void add_rabbit();
-    std::list<Snake> snakes;
 
     void snakes_check_crash();
     void update_available();
@@ -53,6 +54,7 @@ class Game {
     public:
 
     Game();
+    std::list<Snake> snakes;
     void draw_all();
     void snakes_step();
 

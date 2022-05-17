@@ -4,6 +4,9 @@
 #include <memory>
 #include <functional>
 #include <chrono>
+#include <list>
+#include <string>
+#include <unordered_map>
 #include "model.hpp"
 
 using namespace std::chrono_literals;
@@ -14,6 +17,7 @@ class View {
         Coord max_coord;
 
     public:
+        std::unordered_map<std::string, std::function<void(void)>> button_table;
         std::chrono::milliseconds tick_time = 500ms;
         static std::shared_ptr<View> get(const std::string arg = "text");
         static std::shared_ptr<View> obj;

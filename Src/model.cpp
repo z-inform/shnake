@@ -3,6 +3,7 @@
 
 #include "model.hpp"
 #include "view.hpp"
+#include "controller.hpp"
 
 Coord Game::get_rand_coord(){
 
@@ -96,6 +97,9 @@ void Game::snakes_step(){
         
         snake.body.push_front(std::make_pair(new_head, snake.body.front().second));
 
+        snake.last_dir = snake.body.front().second;
+
+
     }
 
     snakes_check_crash();
@@ -108,16 +112,20 @@ void Game::snakes_check_crash(){
         next_snake++;
 
         Coord head = snake -> body.front().first;
-        if ((head.x <= 0) || (head.x >= v -> get_max_coord().x)) {
+        if ((head.x <= 1) || (head.x >= v -> get_max_coord().x)) {
             snakes.erase(snake);
             continue;
         }
 
-        if ((head.y <= 0) || (head.y >= v -> get_max_coord().y)) {
+        if ((head.y <= 1) || (head.y >= v -> get_max_coord().y)) {
             snakes.erase(snake);
             continue;
         }
         
+        for (auto& seg : snake -> body)
+            if (obstacles.find(seg.first) != obstacles.end())
+                snakes.erase(snake);
+
         bool dead = false;
         for (auto other = snakes.begin(); (other != snakes.end()) && !dead; other++) {
             auto seg = other -> body.begin();
@@ -131,9 +139,6 @@ void Game::snakes_check_crash(){
                 }
         }
 
-        for (auto& seg : snake -> body)
-            if (obstacles.find(seg.first) != obstacles.end())
-                snakes.erase(snake);
     }
 }
 
