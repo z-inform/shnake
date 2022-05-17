@@ -10,7 +10,7 @@ std::shared_ptr<View> View::get(const std::string arg){
     if (!obj) {
 
         if (arg == "graph") {
-            //obj = std::make_shared<Graphview>();
+            obj = std::make_shared<Graphview>();
         }
 
         if (arg == "text")
@@ -23,6 +23,10 @@ std::shared_ptr<View> View::get(const std::string arg){
 
 Coord View::get_max_coord(){
     return View::max_coord;
+}
+
+Coord View::get_min_coord(){
+    return View::min_coord;
 }
 
 void View::set_max_coord(int x, int y){

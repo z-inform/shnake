@@ -14,7 +14,7 @@ INCLDIR = Include
 all : $(PROG)
 
 $(PROG) : $(addprefix $(BUILDDIR)/, $(OBJ))
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) $^ -o $@
+	$(CXX) $^ $(CXXFLAGS) $(LDFLAGS) -o $@
 
 $(addprefix $(BUILDDIR)/, $(OBJ)) : $(BUILDDIR)/%.o : $(SRCDIR)/%.cpp $(INCLDIR)/%.hpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@

@@ -11,7 +11,6 @@ class Textview : public View {
 
     public:
 
-    virtual void draw() override;
     virtual void run() override;
     Textview();
     ~Textview();

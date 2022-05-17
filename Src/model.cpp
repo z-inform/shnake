@@ -19,11 +19,13 @@ void Game::update_available(){
     auto v = View::get();
 
     Coord max = v -> get_max_coord();
-    max.x -= 2;
+    max.x -= 1;
     max.y -= 1;
 
-    for (int i = 2; i <= max.x; i++)
-        for (int j = 2; j <= max.y; j++)
+    Coord min = v -> get_min_coord();
+
+    for (int i = min.x; i <= max.x; i++)
+        for (int j = min.y; j <= max.y; j++)
             available.insert({i, j});
 
     for (auto& c : obstacles)

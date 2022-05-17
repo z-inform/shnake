@@ -29,7 +29,6 @@ void Textview::size_change_handler(int sig){
 }
 
 Textview::Textview(){
-    std::cout << "oaoa text constructor" << std::endl;
 
     tcgetattr(0, &old_term_state);
     struct termios raw;
@@ -38,8 +37,10 @@ Textview::Textview(){
     raw.c_cc[VINTR] = '';
     struct winsize win_size;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &win_size); 
-    max_coord.x = win_size.ws_row + 1;
+    max_coord.x = win_size.ws_row;
     max_coord.y = win_size.ws_col / 2;
+    min_coord.x = 2;
+    min_coord.y = 2;
     tcsetattr(0, TCSANOW, &raw);
 
     c_sigint_handler = std::bind(&Textview::sigint_handler, this, std::placeholders::_1);
@@ -76,10 +77,6 @@ void Textview::draw_frame(){
     hline(max_coord.x, 1, max_coord.y, "\e[34m⌘ ");
 
     fflush(stdout);
-}
-
-void Textview::draw(){
-
 }
 
 void Textview::draw(Coord& rabbit){
@@ -159,7 +156,6 @@ void Textview::hline(unsigned int x, unsigned int y, unsigned int length, const 
     }
     std::cout << "\e[m";
 }
-
 
 void Textview::vline(unsigned int x, unsigned int y, unsigned int length, const std::string& elem){
     printf("\e[%d;%dH", x, y * 2 - 1);
