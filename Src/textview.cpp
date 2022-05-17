@@ -6,6 +6,7 @@
 #include <signal.h>
 #include <iostream>
 #include <functional>
+#include <chrono>
 
 std::function<void(int)> Textview::c_sigint_handler;
 std::function<void(int)> Textview::c_size_change_handler;
@@ -84,6 +85,7 @@ void Textview::draw(){
 void Textview::draw(Coord& rabbit){
     printf("\e[%d;%dH", rabbit.x, rabbit.y * 2 - 1);
     printf("\e[96m❂ ");
+    fflush(stdout);
 }
 
 void Textview::draw(Snake& snake){
@@ -93,20 +95,20 @@ void Textview::draw(Snake& snake){
 
         switch (segment.second) {
             case Snake::dir::RIGHT:
-                printf("\e[96m⇛ ");
+                printf("\e[95m⇛ ");
                 break;
             case Snake::dir::UP:
-                printf("\e[96m⤊ ");
+                printf("\e[95m⤊ ");
                 break;
             case Snake::dir::LEFT:
-                printf("\e[96m⇚ ");
+                printf("\e[95m⇚ ");
                 break;
             case Snake::dir::DOWN:
-                printf("\e[96m⤋ ");
+                printf("\e[95m⤋ ");
                 break;
         }
     }
-
+    fflush(stdout);
 }
 
 void Textview::run(){
@@ -114,10 +116,10 @@ void Textview::run(){
     screen_clear();
     draw_frame();
     game_running = true;
+    auto delay_start = std::chrono::steady_clock::now();
+
     while (game_running) {
     
-        game_tick();
-        draw_all();
         
         if (poll(&input, 1, 1) == 1){
             char inc_char;
@@ -127,7 +129,17 @@ void Textview::run(){
                 game_running = false;
         }
 
-        sleep(1);
+        screen_clear();
+        draw_frame();
+        draw_all();
+
+        if (std::chrono::steady_clock::now() - delay_start > tick_time) {
+            game_tick();
+            delay_start = std::chrono::steady_clock::now();
+        }
+
+        usleep(100000);
+
     }
 }
 
@@ -150,6 +162,6 @@ void Textview::vline(unsigned int x, unsigned int y, unsigned int length, const 
 }
 
 void Textview::screen_clear(){
-    printf("\e[1;1H \e[J");
+    printf("\e[1;1H\e[J");
 }
 

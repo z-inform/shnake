@@ -94,7 +94,7 @@ void Game::snakes_check_crash(){
 Snake::Snake(Coord head) {
     Coord cur = head;
     for (int i = 0; i < 5; i++){
-        body.push_back(std::pair<Coord, dir>(cur, dir::DOWN));
+        body.push_back(std::pair<Coord, dir>(cur, dir::RIGHT));
         cur.y--;
     }
 }

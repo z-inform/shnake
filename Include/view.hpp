@@ -3,7 +3,10 @@
 #include <iostream>
 #include <memory>
 #include <functional>
+#include <chrono>
 #include "model.hpp"
+
+using namespace std::chrono_literals;
 
 class View {
 
@@ -11,6 +14,7 @@ class View {
         Coord max_coord;
 
     public:
+        std::chrono::milliseconds tick_time = 500ms;
         static std::shared_ptr<View> get(const std::string arg = "text");
         static std::shared_ptr<View> obj;
         virtual void draw() = 0;
