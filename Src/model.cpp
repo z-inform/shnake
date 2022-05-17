@@ -23,6 +23,7 @@ void Game::add_rabbit(){
 Game::Game(){
     auto v = View::get();
     v -> draw_all = std::bind(&Game::draw_all, this);
+    v -> game_tick = std::bind(&Game::snakes_step, this);
 
     for (int i = 0; i < num_rabbits; i++){
         add_rabbit();
@@ -30,6 +31,8 @@ Game::Game(){
 
     Coord start = {v -> get_max_coord().x / 3, v -> get_max_coord().y / 3};
 
+    snakes.push_back(Snake(start));
+    start.x += 5;
     snakes.push_back(Snake(start));
 }
 
@@ -46,7 +49,7 @@ void Game::draw_all(){
 }
 
 void Game::snakes_step(){
-    for (auto snake : snakes) {
+    for (Snake& snake : snakes) {
 
         Coord new_head = snake.body.front().first;
 
@@ -71,15 +74,27 @@ void Game::snakes_step(){
         } else {
             snake.body.pop_back();
         }
+        
+        snake.body.push_front(std::make_pair(new_head, snake.body.front().second));
 
-        snake.body.push_front(std::pair<Coord, Snake::dir>(new_head, snake.body.front().second));
+        for (auto s : snake.body)
+            obstacles.insert(s.first);
+    }
+
+    //snakes_check_crash();
+}
+
+void Game::snakes_check_crash(){
+    for (std::list<Snake>::iterator it = snakes.begin(); it != snakes.end(); it++) {
+        if (obstacles.find(it -> body.front().first) != obstacles.end())
+            snakes.erase(it);
     }
 }
 
 Snake::Snake(Coord head) {
     Coord cur = head;
     for (int i = 0; i < 5; i++){
-        body.push_back(std::pair<Coord, dir>(cur, dir::RIGHT));
+        body.push_back(std::pair<Coord, dir>(cur, dir::DOWN));
         cur.y--;
     }
 }

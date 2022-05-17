@@ -104,9 +104,6 @@ void Textview::draw(Snake& snake){
             case Snake::dir::DOWN:
                 printf("\e[96m⤋ ");
                 break;
-            default:
-                printf("$");
-
         }
     }
 
@@ -119,6 +116,7 @@ void Textview::run(){
     game_running = true;
     while (game_running) {
     
+        game_tick();
         draw_all();
         
         if (poll(&input, 1, 1) == 1){
@@ -129,7 +127,7 @@ void Textview::run(){
                 game_running = false;
         }
 
-        usleep(10000);
+        sleep(1);
     }
 }
 
@@ -140,6 +138,7 @@ void Textview::hline(unsigned int x, unsigned int y, unsigned int length, const 
     }
     std::cout << "\e[m";
 }
+
 
 void Textview::vline(unsigned int x, unsigned int y, unsigned int length, const std::string& elem){
     printf("\e[%d;%dH", x, y * 2 - 1);

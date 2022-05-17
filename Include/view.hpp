@@ -20,5 +20,6 @@ class View {
         Coord get_max_coord();
         void set_max_coord(int x, int y);
         std::function<void(void)> draw_all;
+        std::function<void(void)> game_tick;
 };
 

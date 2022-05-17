@@ -46,6 +46,8 @@ class Game {
     void add_rabbit();
     std::list<Snake> snakes;
 
+    void snakes_check_crash();
+
     public:
 
     Game();
