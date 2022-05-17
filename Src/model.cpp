@@ -81,13 +81,38 @@ void Game::snakes_step(){
             obstacles.insert(s.first);
     }
 
-    //snakes_check_crash();
+    snakes_check_crash();
 }
 
 void Game::snakes_check_crash(){
-    for (std::list<Snake>::iterator it = snakes.begin(); it != snakes.end(); it++) {
-        if (obstacles.find(it -> body.front().first) != obstacles.end())
-            snakes.erase(it);
+    auto v = View::get();
+    for (std::list<Snake>::iterator next_snake = snakes.begin(); next_snake != snakes.end();) {
+        auto snake = next_snake;
+        next_snake++;
+
+        Coord head = snake -> body.front().first;
+        if ((head.x <= 0) || (head.x >= v -> get_max_coord().x)) {
+            snakes.erase(snake);
+            continue;
+        }
+
+        if ((head.y <= 0) || (head.y >= v -> get_max_coord().y)) {
+            snakes.erase(snake);
+            continue;
+        }
+        
+        bool dead = false;
+        for (auto other = snakes.begin(); (other != snakes.end()) && !dead; other++) {
+            auto seg = other -> body.begin();
+            if (other == snake)
+                seg = std::next(seg, 1);
+            for (;seg != other -> body.end(); seg++)
+                if ((head.x == seg -> first.x) && (head.y == seg -> first.y)) {
+                    snakes.erase(snake);
+                    dead = true;
+                    break;
+                }
+        }
     }
 }
 
