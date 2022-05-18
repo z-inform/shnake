@@ -79,8 +79,8 @@ void Textview::draw_frame(){
     fflush(stdout);
 }
 
-void Textview::draw(Coord& rabbit){
-    printf("\e[%d;%dH", rabbit.x, rabbit.y * 2 - 1);
+void Textview::draw(Rabbit& rabbit){
+    printf("\e[%d;%dH", rabbit.place.x, rabbit.place.y * 2 - 1);
     printf("\e[96m❂ ");
     fflush(stdout);
 }
@@ -106,6 +106,14 @@ void Textview::draw(Snake& snake){
         }
     }
     fflush(stdout);
+}
+
+void Textview::draw(std::set<Coord>& swamp){
+    for (auto cell : swamp) {
+        printf("\e[%d;%dH", cell.x, cell.y * 2 - 1);
+        printf("\e[41m  ");
+        printf("\e[49m");
+    }
 }
 
 void Textview::run(){

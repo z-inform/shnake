@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 #include <string>
+#include <set>
 
 #include "view.hpp"
 #include "model.hpp"
@@ -19,8 +20,9 @@ class Graphview : public View {
     ~Graphview();
 
     void draw_frame();
-    void draw(Coord& rabbit);
+    void draw(Rabbit& rabbit);
     void draw(Snake& snake);
+    void draw(std::set<Coord>& swamp);
     std::string key_to_str(sf::Keyboard::Key code);
 
 };

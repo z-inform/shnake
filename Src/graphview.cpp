@@ -17,10 +17,10 @@ Graphview::~Graphview(){
 
 }
 
-void Graphview::draw(Coord& rabbit){
+void Graphview::draw(Rabbit& rabbit){
     sf::IntRect rab_rect(32, 48, 16, 16);
     sf::Sprite sprite(texture, rab_rect);
-    sprite.setPosition(rabbit.y * cell_size, rabbit.x * cell_size);
+    sprite.setPosition(rabbit.place.y * cell_size, rabbit.place.x * cell_size);
     window.draw(sprite);
 }
 
@@ -105,6 +105,9 @@ void Graphview::draw(Snake& snake){
         pic.setPosition(segment -> first.y * cell_size, segment -> first.x * cell_size);
         window.draw(pic);
     }
+}
+
+void Graphview::draw(std::set<Coord>& swamp){
 }
 
 void Graphview::run(){

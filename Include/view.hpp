@@ -5,6 +5,7 @@
 #include <functional>
 #include <chrono>
 #include <list>
+#include <set>
 #include <string>
 #include <unordered_map>
 #include "model.hpp"
@@ -23,8 +24,9 @@ class View {
         static std::shared_ptr<View> get(const std::string arg = "text");
         static std::shared_ptr<View> obj;
         virtual void run () = 0;
-        virtual void draw(Coord& rabbit) = 0; //draw a rabbit 
+        virtual void draw(Rabbit& rabbit) = 0; //draw a rabbit 
         virtual void draw(Snake& snake) = 0; //draw a snake
+        virtual void draw(std::set<Coord>& swamp) = 0; //draw swamp
         Coord get_max_coord();
         Coord get_min_coord();
         void set_max_coord(int x, int y);

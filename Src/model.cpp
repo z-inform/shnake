@@ -28,17 +28,16 @@ void Game::update_available(){
         for (int j = min.y; j <= max.y; j++)
             available.insert({i, j});
 
-    for (auto& c : obstacles)
+    for (auto& c : swamp)
         available.erase(c);
 
     for (auto& s : snakes)
         for (auto& seg : s.body)
             available.erase(seg.first);
-
 }
 
 void Game::add_rabbit(){
-    rabbits.insert(get_rand_coord());
+    rabbits.insert(Rabbit(get_rand_coord(), 3));
 }
 
 Game::Game(){
@@ -56,10 +55,16 @@ Game::Game(){
     snakes.push_back(Snake(start));
     start.x += 5;
     snakes.push_back(Snake(start));
+
+    for (int i = 0; i < 7; i++) {
+        swamp.insert({20 + i, 40});
+    }
 }
 
 void Game::draw_all(){
     auto v = View::get();
+
+    v -> draw(swamp);
 
     for (auto r : rabbits)
         v -> draw(r);
@@ -68,43 +73,79 @@ void Game::draw_all(){
         v -> draw(s);
     }
 
+
 }
 
 void Game::snakes_step(){
-    for (Snake& snake : snakes) {
+
+    std::set<Rabbit> temp;
+
+    for (auto r = rabbits.begin(); r != rabbits.end(); r++) { //slowly drown rabbits in swamp
+        auto res = swamp.find(r -> place);
+        if (res != swamp.end()) {
+            if (r -> left_to_live > 1) 
+                temp.insert(Rabbit(r -> place, r -> left_to_live - 1));
+        } else {
+            temp.insert(Rabbit(r -> place, 5));
+        }
+    }
+
+    rabbits = temp;
+
+    for (Snake& snake : snakes) { //move snakes
 
         Coord new_head = snake.body.front().first;
 
-        switch (snake.body.front().second) {
-            case Snake::dir::RIGHT:
-                new_head.y++;
-                break;
-            case Snake::dir::UP:
-                new_head.x--;
-                break;
-            case Snake::dir::LEFT:
-                new_head.y--;
-                break;
-            case Snake::dir::DOWN:
-                new_head.x++;
-                break;
-        }
-
-        auto eaten = rabbits.find(new_head);
-        if (eaten != rabbits.end()) {
-            rabbits.erase(eaten);
+        if (snake.miss_tick) {
+            snake.miss_tick--;
         } else {
-            snake.body.pop_back();
+            switch (snake.body.front().second) {
+                case Snake::dir::RIGHT:
+                    new_head.y++;
+                    break;
+                case Snake::dir::UP:
+                    new_head.x--;
+                    break;
+                case Snake::dir::LEFT:
+                    new_head.y--;
+                    break;
+                case Snake::dir::DOWN:
+                    new_head.x++;
+                    break;
+            }
+            snake.body.push_front(std::make_pair(new_head, snake.body.front().second));
+            if (snake.slowed)
+                snake.miss_tick++;
+
+            bool am = false;
+            for (auto eaten : rabbits) {
+                if (eaten.place == new_head) {
+                    rabbits.erase(eaten);
+                    add_rabbit();
+                    am = true;
+                    break;
+                }
+            }
+            if (!am) {
+                snake.body.pop_back();
+            }
+            snake.last_dir = snake.body.front().second;
+
+            for (auto& seg : snake.body) {
+                if (swamp.find(seg.first) != swamp.end()) {
+                    if (snake.slowed != true) {
+                        snake.slowed = true;
+                        snake.miss_tick = 1;
+                    } 
+                } else {
+                    snake.slowed = false;
+                }
+            }
         }
-        
-        snake.body.push_front(std::make_pair(new_head, snake.body.front().second));
-
-        snake.last_dir = snake.body.front().second;
-
-
     }
 
     snakes_check_crash();
+    grow_swamp();
 }
 
 void Game::snakes_check_crash(){
@@ -124,10 +165,6 @@ void Game::snakes_check_crash(){
             continue;
         }
         
-        for (auto& seg : snake -> body)
-            if (obstacles.find(seg.first) != obstacles.end())
-                snakes.erase(snake);
-
         bool dead = false;
         for (auto other = snakes.begin(); (other != snakes.end()) && !dead; other++) {
             auto seg = other -> body.begin();
@@ -144,10 +181,57 @@ void Game::snakes_check_crash(){
     }
 }
 
+void Game::grow_swamp(){
+    update_available();
+
+    std::uniform_int_distribution<int> dist_more (0, 3);
+    int more = dist_more(Game::generator);
+
+    std::uniform_int_distribution<int> dist_less (0, 2);
+    int less = dist_less(Game::generator);
+
+    std::uniform_int_distribution<int> dist_swamp (0, swamp.size() - 1);
+
+    for (int i = 0; i < more; i++) {
+
+        auto cell = swamp.begin();
+        std::advance(cell, dist_swamp(Game::generator));
+
+        std::list<Coord> free_space;
+        if (available.find(Coord(cell -> x - 1, cell -> y)) != available.end())
+            free_space.push_back(Coord(cell -> x - 1, cell -> y));
+        if (available.find(Coord(cell -> x + 1, cell -> y)) != available.end())
+            free_space.push_back(Coord(cell -> x + 1, cell -> y));
+        if (available.find(Coord(cell -> x, cell -> y - 1)) != available.end())
+            free_space.push_back(Coord(cell -> x, cell -> y - 1));
+        if (available.find(Coord(cell -> x, cell -> y + 1)) != available.end())
+            free_space.push_back(Coord(cell -> x, cell -> y - 1));
+         
+        if (free_space.size() == 0) {
+            more++;
+            continue;
+        }
+
+        std::uniform_int_distribution<int> dist_free (0, free_space.size() - 1);
+        auto add = free_space.begin();
+        std::advance(add, dist_free(Game::generator));
+        swamp.insert(*add);
+    }
+
+
+    for (int i = 0; i < less; i++) {
+        std::uniform_int_distribution<int> dist_free (0, swamp.size() - 1);
+        auto cell = swamp.begin();
+        std::advance(cell, dist_free(Game::generator));
+        swamp.erase(cell);
+    }
+}
+
 Snake::Snake(Coord head) {
     Coord cur = head;
     for (int i = 0; i < 5; i++){
         body.push_back(std::pair<Coord, dir>(cur, dir::RIGHT));
         cur.y--;
     }
+    last_dir = dir::RIGHT;
 }

@@ -6,6 +6,7 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include <functional>
+#include <set>
 
 class Textview : public View {
 
@@ -29,6 +30,7 @@ class Textview : public View {
     void sigint_handler(int sig);
     void size_change_handler(int sig);
 
-    void draw(Coord& rabbit);
+    void draw(Rabbit& rabbit);
     void draw(Snake& snake);
+    void draw(std::set<Coord>& swamp);
 };

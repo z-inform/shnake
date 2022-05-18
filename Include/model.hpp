@@ -13,9 +13,29 @@ class Coord {
         return std::tie(l.x, l.y) < std::tie(r.x, r.y);
     }
 
+    friend bool operator== (const Coord& l, const Coord& r) {
+        return (l.x == r.x) && (l.y == r.y);
+    }
+
+
     public:
+        Coord(): x(0), y(0) {};
+        Coord(int x, int y): x(x), y(y) {};
         int x;
         int y;
+};
+
+class Rabbit {
+
+    friend bool operator< (const Rabbit& l, const Rabbit& r) {
+        return std::tie(l.place, l.left_to_live) < std::tie(r.place, r.left_to_live);
+    }
+
+    public:
+    Coord place;
+    int left_to_live = 5;
+
+    Rabbit(Coord coord, int life): place(coord), left_to_live(life){};
 };
 
 class Snake {
@@ -23,6 +43,8 @@ class Snake {
 
     Snake(Coord head);
     Snake() {};
+    bool slowed = false;
+    int miss_tick = 0;
     
     enum class dir {
         UP,
@@ -37,10 +59,10 @@ class Snake {
 
 class Game {
 
-    unsigned short num_rabbits = 500;
+    unsigned short num_rabbits = 50;
 
-    std::set<Coord> rabbits;
-    std::set<Coord> obstacles;
+    std::set<Rabbit> rabbits;
+    std::set<Coord> swamp;
     std::set<Coord> available;
     Coord get_rand_coord();
 
@@ -50,6 +72,7 @@ class Game {
 
     void snakes_check_crash();
     void update_available();
+    void grow_swamp();
 
     public:
 
