@@ -8,7 +8,9 @@ Graphview::Graphview():
     max_coord = {60, 100};
     min_coord = {1, 1};
     window.setVerticalSyncEnabled(true);
-    texture.loadFromFile("sprites/sheet.png");
+    if(!texture.loadFromFile("sprites/sheet.png")) {
+        throw std::invalid_argument("Could not load texture file\n Check that ./sprites/sheet.png is available\n");
+    }
 }
 
 Graphview::~Graphview(){
