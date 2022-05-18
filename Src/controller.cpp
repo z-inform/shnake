@@ -14,6 +14,12 @@ Human::Human(const std::vector<std::string> &buttons, Snake* my_snake):
     }
 }
 
+Human::~Human(){
+    auto v = View::get();
+    for (auto s : buttons_)
+        v -> button_table.erase(s);
+}
+
 void Human::button_handler(std::string button){
         if (button == buttons_[0]) {
             if (controlled_snake -> last_dir != Snake::dir::LEFT)

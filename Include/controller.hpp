@@ -14,4 +14,5 @@ class Human : public Snake {
     public: 
     void button_handler(std::string button);
     Human(const std::vector<std::string> &buttons, Snake* my_snake);
+    ~Human();
 };
