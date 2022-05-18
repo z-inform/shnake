@@ -114,12 +114,12 @@ void Game::snakes_check_crash(){
         next_snake++;
 
         Coord head = snake -> body.front().first;
-        if ((head.x <= 1) || (head.x >= v -> get_max_coord().x)) {
+        if ((head.x < v -> get_min_coord().x) || (head.x >= v -> get_max_coord().x - 1)) {
             snakes.erase(snake);
             continue;
         }
 
-        if ((head.y <= 1) || (head.y >= v -> get_max_coord().y)) {
+        if ((head.y < v -> get_min_coord().y) || (head.y >= v -> get_max_coord().y)) {
             snakes.erase(snake);
             continue;
         }

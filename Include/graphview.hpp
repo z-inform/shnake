@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
+#include <string>
 
 #include "view.hpp"
 #include "model.hpp"
@@ -20,5 +21,6 @@ class Graphview : public View {
     void draw_frame();
     void draw(Coord& rabbit);
     void draw(Snake& snake);
+    std::string key_to_str(sf::Keyboard::Key code);
 
 };

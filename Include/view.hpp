@@ -19,7 +19,7 @@ class View {
 
     public:
         std::unordered_map<std::string, std::function<void(void)>> button_table;
-        std::chrono::milliseconds tick_time = 500ms;
+        std::chrono::milliseconds tick_time = 100ms;
         static std::shared_ptr<View> get(const std::string arg = "text");
         static std::shared_ptr<View> obj;
         virtual void run () = 0;
